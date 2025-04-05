@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+const dns = require('dns');
 const app = express();
 
 // Basic Configuration
@@ -21,4 +23,18 @@ app.get('/api/hello', function(req, res) {
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
+});
+
+app.post("/api/shorturl", function(req, res){
+  if(dns.lookup(res.query.original_url), (err, address, family)=>{
+    if(err){ throw err; }
+    console.log(`IP Adress ${address}, IP family: IPv${family}`);
+    
+    res.json({original_url: req.query.original_url, short_url: 1});
+  });
+
+});
+
+app.get("/api/:short_url", function(req, res){
+  res.redirect(req.query.original_url);
 });
