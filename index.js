@@ -52,13 +52,9 @@ catch { res.json({error: 'invalid url'}); }
 
 });
 
-app.get("/api/:short_url", function(req, res){
+app.get("/api/shorturl/:short_url", function(req, res){
 
-  ////res.redirect("https://freecodecamp.org/");
-  // res.location(urls[req.params.short_url]);
   res.writeHead(302, { Location: urls[req.params.short_url] });
   res.end();
     
-  //res.json({all: urls, selected: urls[req.params.short_url]});
-
 });
