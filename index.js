@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dns = require('dns');
+const { error, log } = require('console');
 const app = express();
 
 // Basic Configuration
@@ -16,6 +17,12 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
+app.use(bodyParser.urlencoded({extended: false}));
+
+let urls = {
+  "test": "https://yahoo.com/"
+};
+
 // Your first API endpoint
 app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
@@ -26,15 +33,34 @@ app.listen(port, function() {
 });
 
 app.post("/api/shorturl", function(req, res){
-  if(dns.lookup(res.query.original_url), (err, address, family)=>{
-    if(err){ throw err; }
-    console.log(`IP Adress ${address}, IP family: IPv${family}`);
-    
-    res.json({original_url: req.query.original_url, short_url: 1});
-  });
 
+  let valid = false;
+
+  let url = req.body.url;
+
+  try{
+    let urlObj = new URL(url);
+
+    dns.lookup(urlObj.hostname, (err)=>{
+      if(err){ res.json({error: 'invalid url'}); return; }
+      else{ valid = true; }
+    });
+
+    if(valid){
+      let short = Math.floor(Math.random() * 1000);
+      urls[short] = url;
+      res.json({original_url: url, short: short});
+    }
+    console.log("Something happened");
+  }
+  catch { res.json({error: 'invalid url'}); return; }
 });
 
 app.get("/api/:short_url", function(req, res){
-  res.redirect(req.query.original_url);
+
+  ////res.redirect("https://freecodecamp.org/");
+  res.redirect(urls[req.params.short_url]);
+  
+  //res.json({all: urls, selected: urls[req.params.short_url]});
+
 });
