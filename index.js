@@ -40,7 +40,7 @@ app.post("/api/shorturl", function(req, res){
     urlObj = new URL(url);
 
   dns.lookup(urlObj.hostname, (err)=>{
-    if(err){ res.json({error: 'invalid url1'}); return; }
+    if(err){ res.json({error: 'invalid url'}); return; }
     else{ 
       let short = Math.floor(Math.random() * 1000);
       urls[short] = url;
@@ -55,8 +55,10 @@ catch { res.json({error: 'invalid url'}); }
 app.get("/api/:short_url", function(req, res){
 
   ////res.redirect("https://freecodecamp.org/");
-  res.redirect(urls[req.params.short_url]);
-  
+  // res.location(urls[req.params.short_url]);
+  res.writeHead(302, { Location: urls[req.params.short_url] });
+  res.end();
+    
   //res.json({all: urls, selected: urls[req.params.short_url]});
 
 });
