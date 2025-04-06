@@ -33,27 +33,23 @@ app.listen(port, function() {
 });
 
 app.post("/api/shorturl", function(req, res){
-
-  let valid = false;
-
   let url = req.body.url;
+  let urlObj;
 
   try{
-    let urlObj = new URL(url);
+    urlObj = new URL(url);
 
-    dns.lookup(urlObj.hostname, (err)=>{
-      if(err){ res.json({error: 'invalid url'}); return; }
-      else{ valid = true; }
-    });
-
-    if(valid){
+  dns.lookup(urlObj.hostname, (err)=>{
+    if(err){ res.json({error: 'invalid url1'}); return; }
+    else{ 
       let short = Math.floor(Math.random() * 1000);
       urls[short] = url;
       res.json({original_url: url, short: short});
     }
-    else{ res.json({error: 'invalid url'}); }
-  }
-  catch { res.json({error: 'invalid url'}); return; }
+  });
+}
+catch { res.json({error: 'invalid url'}); }
+
 });
 
 app.get("/api/:short_url", function(req, res){
